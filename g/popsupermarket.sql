@@ -2,7 +2,7 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
+-- Host: http://103.114.201.254/
 -- Generation Time: Jan 06, 2026 at 03:51 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `9999db`
+-- Database: `4007db`
 --
 
 -- --------------------------------------------------------
