@@ -82,7 +82,7 @@ if(isset($_POST['Submit'])){
     if ($num == 1) {
         $data = mysqli_fetch_array($rs);
         $_SESSION['aid'] = $data['a_id'];
-        $_SESSION['aname'] = $data['a_name']; 
+        $_SESSION['aname'] = $data['a_username'];
         
         echo "<script>";
         echo "window.location='index2.php';"; 
