@@ -69,28 +69,26 @@
 if(isset($_POST['Submit'])){
     include_once("connectdb.php");
     
-    // ป้องกัน SQL Injection โดยการใช้ mysqli_real_escape_string
+    // 1. ตรวจสอบว่า $_POST['auser'] และ $_POST['pang'] ตรงกับ name="" ใน input หรือไม่
     $user = mysqli_real_escape_string($conn, $_POST['auser']);
     $pass = mysqli_real_escape_string($conn, $_POST['pang']);
 
-    // ค้นหาข้อมูล (แนะนำให้ใช้การตรวจสอบ Password แบบ Hash ในอนาคต)
+    // 2. ลอง echo ค่าออกมาดู (ใช้เพื่อ debug เท่านั้น พอแก้ได้แล้วให้ลบออก)
+    // die("User: $user | Pass: $pass"); 
+
     $sql = "SELECT * FROM admin WHERE a_username='{$user}' AND a_password='{$pass}' LIMIT 1";
     
     $rs = mysqli_query($conn, $sql);
-    $num = mysqli_num_rows($rs);
     
-    if ($num == 1) {
+    if ($rs && mysqli_num_rows($rs) == 1) {
         $data = mysqli_fetch_array($rs);
         $_SESSION['aid'] = $data['a_id'];
-        $_SESSION['aname'] = $data['a_username'];
+        $_SESSION['auser'] = $data['a_username']; // เก็บ username
+        $_SESSION['aname'] = $data['a_name'];     // เก็บชื่อจริง
         
-        echo "<script>";
-        echo "window.location='index2.php';"; 
-        echo "</script>";
+        echo "<script>window.location='index2.php';</script>";
     } else {
-        echo "<script>";
-        echo "alert('Username หรือ Password ไม่ถูกต้อง');"; 
-        echo "</script>";
+        echo "<script>alert('Username หรือ Password ไม่ถูกต้อง');</script>";
     }
 }
 ?>
