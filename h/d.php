@@ -9,7 +9,7 @@
 </head>
 
 <body>
-<h1>c.php</h1>
+<h1>d.php</h1>
 
 <?php
     echo $_SESSION['name'] . "<br>";
