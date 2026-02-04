@@ -52,7 +52,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Password</label>
-                            <input type="password" name="r660109" class="form-control" placeholder="ระบุรหัสผ่าน" required>
+                            <input type="password" name="pang" class="form-control" placeholder="ระบุรหัสผ่าน" required>
                         </div>
                         <div class="d-grid gap-2">
                             <button type="submit" name="Submit" class="btn btn-pink btn-lg">LOGIN</button>
@@ -70,8 +70,8 @@ if(isset($_POST['Submit'])){
     include_once("connectdb.php");
     
     // ป้องกัน SQL Injection โดยการใช้ mysqli_real_escape_string
-    $user = mysqli_real_escape_string($conn, $_POST['root']);
-    $pass = mysqli_real_escape_string($conn, $_POST['r660109']);
+    $user = mysqli_real_escape_string($conn, $_POST['auser']);
+    $pass = mysqli_real_escape_string($conn, $_POST['pang']);
 
     // ค้นหาข้อมูล (แนะนำให้ใช้การตรวจสอบ Password แบบ Hash ในอนาคต)
     $sql = "SELECT * FROM admin WHERE a_username='{$user}' AND a_password='{$pass}' LIMIT 1";
@@ -82,7 +82,7 @@ if(isset($_POST['Submit'])){
     if ($num == 1) {
         $data = mysqli_fetch_array($rs);
         $_SESSION['aid'] = $data['a_id'];
-        $_SESSION['aname'] = $data['a_username'];
+        $_SESSION['aname'] = $data['a_name']; 
         
         echo "<script>";
         echo "window.location='index2.php';"; 
