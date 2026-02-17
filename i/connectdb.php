@@ -4,6 +4,7 @@ $user = "root";
 $pwd = "r660109"; 
 $db = "4007db";
 
+
 // เชื่อมต่อฐานข้อมูล
 $conn = mysqli_connect($host, $user, $pwd, $db) or die("เชื่อมต่อฐานข้อมูลไม่ได้");
 
