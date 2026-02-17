@@ -1,20 +1,30 @@
 <?php
 include_once("connectdb.php");
 
-// 1. ส่วนบันทึกข้อมูล
 if (isset($_POST['submit'])) {
     $p_name = $_POST['p_name'];
     $r_id = $_POST['r_id'];
     
+    // รับข้อมูลรูปภาพ
     $file_name = $_FILES['p_img']['name'];
     $file_tmp = $_FILES['p_img']['tmp_name'];
     
-    // อัปโหลดไฟล์ไปที่โฟลเดอร์ images
-    if (move_uploaded_file($file_tmp, "images/" . $file_name)) {
-        // ใช้ชื่อคอลัมน์ p_ext ตามฐานข้อมูลจริง
+    // กำหนดที่อยู่เก็บรูปให้ชัดเจน (ใช้ที่อยู่เดียวกันกับไฟล์ b.php)
+    $upload_dir = "images/"; 
+    $target_file = $upload_dir . basename($file_name);
+
+    // 1. พยายามย้ายไฟล์รูป
+    if (move_uploaded_file($file_tmp, $target_file)) {
+        // 2. ถ้าไฟล์รูปไปลงโฟลเดอร์สำเร็จ ค่อยสั่งบันทึกลงฐานข้อมูล
+        // ใช้คอลัมน์ p_ext ตามที่เห็นในรูป image_241f60.jpg นะครับ
         $sql = "INSERT INTO provinces (p_name, r_id, p_ext) VALUES ('$p_name', '$r_id', '$file_name')";
         mysqli_query($conn, $sql);
+    } else {
+        // ถ้าไฟล์รูปย้ายไม่สำเร็จ (อาจเพราะ Path ผิด) ให้ลองบันทึกแค่ชื่อจังหวัดไปก่อนเพื่อทดสอบ
+        $sql = "INSERT INTO provinces (p_name, r_id, p_ext) VALUES ('$p_name', '$r_id', '')";
+        mysqli_query($conn, $sql);
     }
+    
     header("location: b.php");
     exit();
 }
