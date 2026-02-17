@@ -1,7 +1,7 @@
 <?php
 include_once("connectdb.php");
 
-// 1. ส่วนบันทึกข้อมูล
+// ส่วนบันทึกข้อมูล
 if (isset($_POST['submit'])) {
     $p_name = $_POST['p_name'];
     $r_id = $_POST['r_id'];
@@ -10,18 +10,14 @@ if (isset($_POST['submit'])) {
     $file_name = $_FILES['p_img']['name'];
     $file_tmp = $_FILES['p_img']['tmp_name'];
     
-    // กำหนดที่อยู่เก็บรูปให้ตรงกับโฟลเดอร์ที่แป้งสร้างใน SSH
+    // กำหนดโฟลเดอร์เก็บรูปให้ตรงกับที่สร้างใน SSH
     $target_dir = "images/"; 
     $target_file = $target_dir . basename($file_name);
 
     // ย้ายไฟล์รูปไปที่โฟลเดอร์ images
     if (move_uploaded_file($file_tmp, $target_file)) {
-        // ใช้ชื่อคอลัมน์ p_ext ตามโครงสร้างฐานข้อมูลของแป้ง
+        // ใช้ชื่อคอลัมน์ p_ext ตามที่เห็นในรูป image_241f60.jpg
         $sql = "INSERT INTO provinces (p_name, r_id, p_ext) VALUES ('$p_name', '$r_id', '$file_name')";
-        mysqli_query($conn, $sql);
-    } else {
-        // หากย้ายรูปไม่สำเร็จ ให้บันทึกแค่ชื่อจังหวัดไปก่อนเพื่อตรวจสอบ
-        $sql = "INSERT INTO provinces (p_name, r_id, p_ext) VALUES ('$p_name', '$r_id', '')";
         mysqli_query($conn, $sql);
     }
     
@@ -32,21 +28,16 @@ if (isset($_POST['submit'])) {
 <!doctype html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>จัดการข้อมูลจังหวัด -- ดวงรักษา อรเพ็ชร</title>
-<style>
-    body { font-family: Tahoma, Geneva, sans-serif; padding: 20px; background-color: #f4f4f4; }
-    .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-    th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
-    th { background-color: #f8f8f8; }
-    img { border-radius: 4px; }
-    .btn-del { color: red; text-decoration: none; font-size: 20px; }
-</style>
+    <meta charset="utf-8">
+    <title>จัดการข้อมูลจังหวัด -- ดวงรักษา อรเพ็ชร</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; padding: 20px; }
+        table { border-collapse: collapse; width: 100%; max-width: 800px; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+        th { background-color: #f2f2f2; }
+    </style>
 </head>
-
 <body>
-<div class="container">
     <h1>จัดการข้อมูลจังหวัด -- ดวงรักษา อรเพ็ชร (แป้ง)</h1>
 
     <form method="post" action="" enctype="multipart/form-data">
@@ -74,13 +65,12 @@ if (isset($_POST['submit'])) {
         <th>ลบ</th>
       </tr>
     <?php
-    // ดึงข้อมูลพร้อมชื่อภาค (INNER JOIN) เพื่อให้เหมือนตัวอย่าง
-    $sql = "SELECT provinces.*, regions.r_name 
-            FROM provinces 
-            INNER JOIN regions ON provinces.r_id = regions.r_id 
-            ORDER BY provinces.p_id ASC";
-    $rs = mysqli_query($conn, $sql);
-    
+    // ดึงข้อมูลพร้อมชื่อภาค (INNER JOIN)
+    $sql_show = "SELECT provinces.*, regions.r_name 
+                 FROM provinces 
+                 INNER JOIN regions ON provinces.r_id = regions.r_id 
+                 ORDER BY provinces.p_id ASC";
+    $rs = mysqli_query($conn, $sql_show);
     while ($data = mysqli_fetch_array($rs)){
     ?>
       <tr>
@@ -93,12 +83,12 @@ if (isset($_POST['submit'])) {
             <?php } ?>
         </td>
         <td>
-            <a href="delete_province.php?id=<?php echo $data['p_id']; ?>" 
-               onclick="return confirm('ลบข้อมูลนี้ใช่หรือไม่?')" class="btn-del">🗑️</a>
+            <a href="delete_province.php?id=<?php echo $data['p_id']; ?>" onclick="return confirm('ลบไหม?')">
+               <img src="https://cdn-icons-png.flaticon.com/512/1214/1214428.png" width="20">
+            </a>
         </td>
       </tr>
     <?php } ?>
     </table>
-</div>
 </body>
 </html>
