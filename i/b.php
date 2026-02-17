@@ -6,13 +6,16 @@ if (isset($_POST['submit'])) {
     $p_name = $_POST['p_name'];
     $r_id = $_POST['r_id'];
     
-    // จัดการรูปภาพ
+    // จัดการอัปโหลดรูปภาพ
     $file_name = $_FILES['p_img']['name'];
     $file_tmp = $_FILES['p_img']['tmp_name'];
-    move_uploaded_file($file_tmp, "images/".$file_name);
-
-    $sql_insert = "INSERT INTO provinces (p_name, r_id, p_img) VALUES ('$p_name', '$r_id', '$file_name')";
-    mysqli_query($conn, $sql_insert);
+    
+    // ย้ายไฟล์ไปที่โฟลเดอร์ images (ต้องสร้างโฟลเดอร์นี้ไว้ด้วย)
+    if (move_uploaded_file($file_tmp, "images/" . $file_name)) {
+        $sql_insert = "INSERT INTO provinces (p_name, r_id, p_img) VALUES ('$p_name', '$r_id', '$file_name')";
+        mysqli_query($conn, $sql_insert);
+    }
+    
     header("location: b.php");
     exit();
 }
@@ -21,14 +24,14 @@ if (isset($_POST['submit'])) {
 <html>
 <head>
 <meta charset="utf-8">
-<title>ดวงรักษา อรเพ็ชร</title>
+<title>จัดการข้อมูลจังหวัด - ดวงรักษา อรเพ็ชร</title>
 <style>
-    body { font-family: Tahoma, Geneva, sans-serif; padding: 20px; }
-    table { border-collapse: collapse; width: 100%; max-width: 800px; margin-top: 20px; }
-    th, td { border: 1px solid #333; padding: 10px; text-align: center; }
-    th { background-color: #eee; }
-    img { border-radius: 4px; object-fit: cover; }
-    .btn-del { color: red; text-decoration: none; font-size: 20px; }
+    body { font-family: Tahoma, Geneva, sans-serif; padding: 20px; background-color: #f9f9f9; }
+    table { border-collapse: collapse; width: 100%; max-width: 900px; margin-top: 20px; background: #fff; }
+    th, td { border: 1px solid #ccc; padding: 12px; text-align: center; }
+    th { background-color: #f2f2f2; }
+    img { border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .btn-del { color: #ff0000; text-decoration: none; font-size: 18px; }
 </style>
 </head>
 
@@ -37,7 +40,7 @@ if (isset($_POST['submit'])) {
 
 <form method="post" action="" enctype="multipart/form-data">
     ชื่อจังหวัด: <input type="text" name="p_name" required> 
-    รูปภาพ: <input type="file" name="p_img" required>
+    รูปภาพ: <input type="file" name="p_img" required accept="image/*">
     ภาค: 
     <select name="r_id" required>
         <option value="">-- เลือกภาค --</option>
@@ -56,11 +59,11 @@ if (isset($_POST['submit'])) {
     <th>รหัสจังหวัด</th>
     <th>ชื่อจังหวัด</th>
     <th>ชื่อภาค</th>
-    <th>รูป</th>
+    <th>รูปภาพ</th>
     <th>ลบ</th>
   </tr>
 <?php
-// แก้ไข SQL ตรงนี้: ใช้ INNER JOIN เพื่อไปดึงชื่อภาค (r_name) มาโชว์
+// คำสั่ง SQL สำหรับเชื่อม 2 ตารางเข้าด้วยกัน
 $sql = "SELECT provinces.*, regions.r_name 
         FROM provinces 
         INNER JOIN regions ON provinces.r_id = regions.r_id 
@@ -75,12 +78,14 @@ while ($data = mysqli_fetch_array($rs)){
     <td><?php echo $data['r_name']; ?></td>
     <td>
         <?php if($data['p_img']){ ?>
-            <img src="images/<?php echo $data['p_img']; ?>" width="100">
+            <img src="images/<?php echo $data['p_img']; ?>" width="120">
         <?php } ?>
     </td>
     <td>
         <a href="delete_province.php?id=<?php echo $data['p_id']; ?>" 
-           onclick="return confirm('ยืนยันการลบ?')" class="btn-del">🗑️</a>
+           onclick="return confirm('ยืนยันการลบข้อมูลจังหวัดนี้?')">
+           <img src="https://cdn-icons-png.flaticon.com/512/1214/1214428.png" width="25">
+        </a>
     </td>
   </tr>
 <?php } ?>
