@@ -1,12 +1,12 @@
 <?php
 include_once("connectdb.php");
 
-// ส่วนบันทึกข้อมูล (เพิ่มเข้าไปเพื่อให้ปุ่มบันทึกใช้งานได้)
+// ส่วนบันทึกข้อมูล
 if (isset($_POST['submit'])) {
     $r_name = $_POST['r_name'];
     $sql_insert = "INSERT INTO regions (r_name) VALUES ('$r_name')";
     mysqli_query($conn, $sql_insert);
-    header("location: a.php"); // บันทึกเสร็จแล้ว refresh หน้าตัวเอง
+    header("location: a.php"); 
     exit();
 }
 ?>
@@ -18,20 +18,12 @@ if (isset($_POST['submit'])) {
 <style>
     body { font-family: Tahoma, Geneva, sans-serif; padding: 20px; }
     
-    /* สไตล์สำหรับช่องกรอกให้กะพริบ */
-    .blink-input {
+    /* ปรับช่องกรอกให้ดูเรียบง่าย แต่มีเส้นขีดกะพริบรอ (Cursor) */
+    .input-field {
         padding: 5px;
-        border: 2px solid #007bff;
-        outline: none;
-        border-radius: 4px;
-        /* สร้างแอนิเมชันชื่อ blink-border กะพริบทุก 1 วินาที */
-        animation: blink-border 1s infinite; 
-    }
-
-    @keyframes blink-border {
-        0% { border-color: #007bff; box-shadow: 0 0 5px #007bff; }
-        50% { border-color: transparent; box-shadow: none; }
-        100% { border-color: #007bff; box-shadow: 0 0 5px #007bff; }
+        border: 1px solid #ccc;
+        outline: none; /* เอาขอบสีฟ้าเวลาคลิกออก */
+        border-radius: 2px;
     }
 
     table { border-collapse: collapse; margin-top: 20px; }
@@ -46,7 +38,7 @@ if (isset($_POST['submit'])) {
 <h1>งาน i -- 66010914007 ดวงรักษา อรเพ็ชร (แป้ง)</h1>
 
 <form method="post" action="">
-    ชื่อภาค <input type="text" name="r_name" class="blink-input" required autofocus> 
+    ชื่อภาค <input type="text" name="r_name" class="input-field" required autofocus> 
     <input type="submit" name="submit" value="บันทึก">
 </form>
 
@@ -57,7 +49,7 @@ if (isset($_POST['submit'])) {
     <th>ลบ</th>
   </tr>
 <?php
-$sql = "SELECT * FROM regions";
+$sql = "SELECT * FROM regions ORDER BY r_id DESC"; // เรียงจากใหม่ไปเก่า
 $rs = mysqli_query($conn, $sql);
 while ($data = mysqli_fetch_array($rs)){
 ?>
