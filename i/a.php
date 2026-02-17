@@ -17,15 +17,7 @@ if (isset($_POST['submit'])) {
 <title>ดวงรักษา อรเพ็ชร</title>
 <style>
     body { font-family: Tahoma, Geneva, sans-serif; padding: 20px; }
-    
-    /* ปรับช่องกรอกให้ดูเรียบง่าย แต่มีเส้นขีดกะพริบรอ (Cursor) */
-    .input-field {
-        padding: 5px;
-        border: 1px solid #ccc;
-        outline: none; /* เอาขอบสีฟ้าเวลาคลิกออก */
-        border-radius: 2px;
-    }
-
+    .input-field { padding: 5px; border: 1px solid #ccc; outline: none; border-radius: 2px; }
     table { border-collapse: collapse; margin-top: 20px; }
     th { background-color: #f2f2f2; }
     th, td { padding: 8px; text-align: left; border: 1px solid #ccc; }
@@ -49,7 +41,8 @@ if (isset($_POST['submit'])) {
     <th>ลบ</th>
   </tr>
 <?php
-$sql = "SELECT * FROM regions ORDER BY r_id DESC"; // เรียงจากใหม่ไปเก่า
+// แก้ไขบรรทัดนี้: เพิ่ม ORDER BY r_id DESC เพื่อให้ข้อมูลใหม่ขึ้นก่อน
+$sql = "SELECT * FROM regions ORDER BY r_id DESC"; 
 $rs = mysqli_query($conn, $sql);
 while ($data = mysqli_fetch_array($rs)){
 ?>
