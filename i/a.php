@@ -22,6 +22,7 @@ if (isset($_POST['submit'])) {
     th { background-color: #f2f2f2; }
     th, td { padding: 10px; text-align: left; border: 1px solid #ccc; }
     .btn-del { border: 1px solid #ccc; padding: 2px 5px; cursor: pointer; background: #fff; }
+    .btn-del:hover { background: #fee; border-color: #f00; }
 </style>
 </head>
 
@@ -40,7 +41,7 @@ if (isset($_POST['submit'])) {
     <th style="text-align:center;">ลบ</th>
   </tr>
 <?php
-// แก้ไขตรงนี้: ใช้ ASC เพื่อเรียงจากรหัสที่ 1 ไปจนถึงข้อมูลล่าสุดที่อยู่ล่างสุด
+// เรียงจากรหัสที่ 1 ไปจนถึงข้อมูลล่าสุดที่อยู่ล่างสุด
 $sql = "SELECT * FROM regions ORDER BY r_id ASC"; 
 $rs = mysqli_query($conn, $sql);
 while ($data = mysqli_fetch_array($rs)){
@@ -49,9 +50,12 @@ while ($data = mysqli_fetch_array($rs)){
     <td><?php echo $data['r_id']; ?></td>
     <td><?php echo $data['r_name']; ?></td>
     <td align="center">
-        <button type="button" class="btn-del">
-            <img src="https://cdn-icons-png.flaticon.com/512/1214/1214428.png" width="15">
-        </button>
+        <a href="delete_region.php?id=<?php echo $data['r_id']; ?>" 
+           onclick="return confirm('ยืนยันการลบภาค: <?php echo $data['r_name']; ?>?')">
+            <button type="button" class="btn-del">
+                <img src="https://cdn-icons-png.flaticon.com/512/1214/1214428.png" width="15">
+            </button>
+        </a>
     </td>
   </tr>
 <?php } ?>
