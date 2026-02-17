@@ -3,10 +3,18 @@ include_once("connectdb.php");
 
 // ส่วนบันทึกข้อมูล
 if (isset($_POST['submit'])) {
-    $r_name = $_POST['r_name'];
-    $sql_insert = "INSERT INTO regions (r_name) VALUES ('$r_name')";
-    mysqli_query($conn, $sql_insert);
-    header("location: a.php"); 
+    $p_name = $_POST['p_name'];
+    $r_id = $_POST['r_id'];
+    
+    // จัดการอัปโหลดรูปภาพ
+    $ext = pathinfo(basename($_FILES['p_img']['name']), PATHINFO_EXTENSION);
+    $new_file_name = "img_" . uniqid() . "." . $ext;
+    $target_path = "images/" . $new_file_name;
+    move_uploaded_file($_FILES['p_img']['tmp_name'], $target_path);
+
+    $sql = "INSERT INTO provinces (p_name, r_id, p_img) VALUES ('$p_name', '$r_id', '$new_file_name')";
+    mysqli_query($conn, $sql);
+    header("location: b.php");
     exit();
 }
 ?>
@@ -15,46 +23,47 @@ if (isset($_POST['submit'])) {
 <head>
 <meta charset="utf-8">
 <title>ดวงรักษา อรเพ็ชร</title>
-<style>
-    body { font-family: Tahoma, Geneva, sans-serif; padding: 20px; }
-    .input-field { padding: 5px; border: 1px solid #ccc; outline: none; border-radius: 2px; }
-    table { border-collapse: collapse; margin-top: 20px; width: 450px; }
-    th { background-color: #f2f2f2; }
-    th, td { padding: 10px; text-align: left; border: 1px solid #ccc; }
-    .btn-del { border: 1px solid #ccc; padding: 5px; cursor: pointer; background: #fff; }
-    .btn-del:hover { background: #fee; border-color: #f00; }
-</style>
 </head>
-
 <body>
 <h1>งาน i -- 66010914007 ดวงรักษา อรเพ็ชร (แป้ง)</h1>
 
-<form method="post" action="">
-    ชื่อภาค <input type="text" name="r_name" class="input-field" required autofocus> 
+<form method="post" action="" enctype="multipart/form-data">
+    ชื่อจังหวัด <input type="text" name="p_name" required> 
+    รูปภาพ <input type="file" name="p_img" required><br><br>
+    ภาค 
+    <select name="r_id">
+    <?php
+    $sql_r = "SELECT * FROM regions ORDER BY r_name ASC";
+    $rs_r = mysqli_query($conn, $sql_r);
+    while($data_r = mysqli_fetch_array($rs_r)){
+        echo "<option value='{$data_r['r_id']}'>{$data_r['r_name']}</option>";
+    }
+    ?>
+    </select><br><br>
     <input type="submit" name="submit" value="บันทึก">
 </form>
 
-<table>
+<table border="1" style="margin-top:20px;">
   <tr>
-    <th>รหัสภาค</th>
-    <th>ชื่อภาค</th>
-    <th style="text-align:center;">ลบ</th>
+    <th>รหัสจังหวัด</th>
+    <th>ชื่อจังหวัด</th>
+    <th>รูป</th>
+    <th>ลบ</th>
   </tr>
 <?php
-// เรียงจากรหัสที่ 1 ไปจนถึงข้อมูลล่าสุดที่อยู่ล่างสุด
-$sql = "SELECT * FROM regions ORDER BY r_id ASC"; 
-$rs = mysqli_query($conn, $sql);
-while ($data = mysqli_fetch_array($rs)){
+$sql_p = "SELECT * FROM provinces ORDER BY p_id ASC";
+$rs_p = mysqli_query($conn, $sql_p);
+while ($data_p = mysqli_fetch_array($rs_p)){
 ?>
   <tr>
-    <td><?php echo $data['r_id']; ?></td>
-    <td><?php echo $data['r_name']; ?></td>
+    <td><?php echo $data_p['p_id']; ?></td>
+    <td><?php echo $data_p['p_name']; ?></td>
     <td align="center">
-        <a href="delete_region.php?id=<?php echo $data['r_id']; ?>" 
-           onclick="return confirm('ยืนยันการลบภาค: <?php echo $data['r_name']; ?>?')">
-            <button type="button" class="btn-del">
-                <img src="https://cdn-icons-png.flaticon.com/512/1214/1214428.png" width="20">
-            </button>
+        <img src="images/<?php echo $data_p['p_img']; ?>" width="50" alt="ไม่มีรูป">
+    </td>
+    <td align="center">
+        <a href="delete_province.php?id=<?php echo $data_p['p_id']; ?>" onclick="return confirm('ลบหรือไม่?')">
+            <img src="https://cdn-icons-png.flaticon.com/512/1214/1214428.png" width="20">
         </a>
     </td>
   </tr>
@@ -62,6 +71,3 @@ while ($data = mysqli_fetch_array($rs)){
 </table>
 </body>
 </html>
-<?php
-mysqli_close($conn);
-?>
