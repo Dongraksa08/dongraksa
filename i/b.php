@@ -1,22 +1,22 @@
 <?php
 include_once("connectdb.php");
 
-// ส่วนบันทึกข้อมูล
+// 1. ส่วนบันทึกข้อมูล
 if (isset($_POST['submit'])) {
     $p_name = $_POST['p_name'];
     $r_id = $_POST['r_id'];
     
-    // รับข้อมูลรูปภาพ
+    // รับข้อมูลรูปภาพจากฟอร์ม
     $file_name = $_FILES['p_img']['name'];
     $file_tmp = $_FILES['p_img']['tmp_name'];
     
-    // กำหนดโฟลเดอร์เก็บรูปให้ตรงกับที่สร้างใน SSH
+    // ที่อยู่โฟลเดอร์เก็บรูป (ต้องสัมพันธ์กับตำแหน่งไฟล์ b.php)
     $target_dir = "images/"; 
     $target_file = $target_dir . basename($file_name);
 
     // ย้ายไฟล์รูปไปที่โฟลเดอร์ images
     if (move_uploaded_file($file_tmp, $target_file)) {
-        // ใช้ชื่อคอลัมน์ p_ext ตามที่เห็นในรูป image_241f60.jpg
+        // บันทึกลงคอลัมน์ p_ext ตามโครงสร้างฐานข้อมูลของแป้ง
         $sql = "INSERT INTO provinces (p_name, r_id, p_ext) VALUES ('$p_name', '$r_id', '$file_name')";
         mysqli_query($conn, $sql);
     }
@@ -32,7 +32,7 @@ if (isset($_POST['submit'])) {
     <title>จัดการข้อมูลจังหวัด -- ดวงรักษา อรเพ็ชร</title>
     <style>
         body { font-family: Tahoma, sans-serif; padding: 20px; }
-        table { border-collapse: collapse; width: 100%; max-width: 800px; margin-top: 20px; }
+        table { border-collapse: collapse; width: 100%; max-width: 900px; margin-top: 20px; }
         th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
         th { background-color: #f2f2f2; }
     </style>
@@ -47,6 +47,7 @@ if (isset($_POST['submit'])) {
         <select name="r_id" required>
             <option value="">-- เลือกภาค --</option>
             <?php
+            // ดึงข้อมูลภาคมาสร้าง Dropdown
             $q_reg = mysqli_query($conn, "SELECT * FROM regions ORDER BY r_name ASC");
             while($r = mysqli_fetch_array($q_reg)){
                 echo "<option value='".$r['r_id']."'>".$r['r_name']."</option>";
@@ -65,7 +66,7 @@ if (isset($_POST['submit'])) {
         <th>ลบ</th>
       </tr>
     <?php
-    // ดึงข้อมูลพร้อมชื่อภาค (INNER JOIN)
+    // ดึงข้อมูลจังหวัดพร้อมชื่อภาคโดยใช้ INNER JOIN
     $sql_show = "SELECT provinces.*, regions.r_name 
                  FROM provinces 
                  INNER JOIN regions ON provinces.r_id = regions.r_id 
@@ -83,7 +84,7 @@ if (isset($_POST['submit'])) {
             <?php } ?>
         </td>
         <td>
-            <a href="delete_province.php?id=<?php echo $data['p_id']; ?>" onclick="return confirm('ลบไหม?')">
+            <a href="delete_province.php?id=<?php echo $data['p_id']; ?>" onclick="return confirm('ลบข้อมูลนี้?')">
                <img src="https://cdn-icons-png.flaticon.com/512/1214/1214428.png" width="20">
             </a>
         </td>
