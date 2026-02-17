@@ -18,11 +18,10 @@ if (isset($_POST['submit'])) {
 <style>
     body { font-family: Tahoma, Geneva, sans-serif; padding: 20px; }
     .input-field { padding: 5px; border: 1px solid #ccc; outline: none; border-radius: 2px; }
-    table { border-collapse: collapse; margin-top: 20px; }
+    table { border-collapse: collapse; margin-top: 20px; width: 400px; }
     th { background-color: #f2f2f2; }
-    th, td { padding: 8px; text-align: left; border: 1px solid #ccc; }
+    th, td { padding: 10px; text-align: left; border: 1px solid #ccc; }
     .btn-del { border: 1px solid #ccc; padding: 2px 5px; cursor: pointer; background: #fff; }
-    .btn-del:hover { background: #eee; }
 </style>
 </head>
 
@@ -38,11 +37,11 @@ if (isset($_POST['submit'])) {
   <tr>
     <th>รหัสภาค</th>
     <th>ชื่อภาค</th>
-    <th>ลบ</th>
+    <th style="text-align:center;">ลบ</th>
   </tr>
 <?php
-// แก้ไขบรรทัดนี้: เพิ่ม ORDER BY r_id DESC เพื่อให้ข้อมูลใหม่ขึ้นก่อน
-$sql = "SELECT * FROM regions ORDER BY r_id DESC"; 
+// แก้ไขตรงนี้: ใช้ ASC เพื่อเรียงจากรหัสที่ 1 ไปจนถึงข้อมูลล่าสุดที่อยู่ล่างสุด
+$sql = "SELECT * FROM regions ORDER BY r_id ASC"; 
 $rs = mysqli_query($conn, $sql);
 while ($data = mysqli_fetch_array($rs)){
 ?>
