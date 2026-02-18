@@ -30,16 +30,15 @@
 <body>
     <p>66010914007 ดวงรักษา อรเพ็ชร</p>
     
-    <img src="1.jpg" alt="รูปภาพดวงรักษา" width="300">
     
     <br><br>
 
     <button class="btn-green" onclick="window.open('1.jpg', '_blank')">
-        เปิดรูปภาพ 1.jpg
+        ตัวเอง
     </button>
 
     <button class="btn-orange" onclick="window.open('2.jpg', '_blank')">
-        เปิดรูป WFH
+        อาจารย์
     </button>
 
 </body>
