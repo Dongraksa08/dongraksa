@@ -32,15 +32,15 @@
     
 
     
-    
+
     <br><br>
 
     <button class="btn-green" onclick="window.open('1.jpg', '_blank')">
-        ตัวเอง
+        เปิดรูปตัวเอง
     </button>
 
     <button class="btn-orange" onclick="window.open('2.jpg', '_blank')">
-        อาจารย์
+        เปิดรูปอาจารย์
     </button>
 
 </body>
