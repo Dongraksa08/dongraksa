@@ -58,7 +58,7 @@ if (isset($_POST['Submit'])) {
             <tr>
                 <th>รหัสจังหวัด</th>
                 <th>ชื่อจังหวัด</th>
-                <th>ชื่อภาค</th> <th>Province Picture</th>
+                <th>ชื่อภาค</th> <th>รูปภาพ</th>
                 <th>ลบ</th>
             </tr>
         </thead>
