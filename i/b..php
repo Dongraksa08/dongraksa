@@ -5,21 +5,21 @@ include_once("connectdb.php");
 if (isset($_POST['Submit'])) {
     $pname = $_POST['pname'];
     $rid = $_POST['rid'];
+    $ext = pathinfo($_FILES['pimage']['name'], PATHINFO_EXTENSION); // ดึงนามสกุลไฟล์
     
-    // บันทึกข้อมูลลงฐานข้อมูลก่อนเพื่อเอา ID มาตั้งชื่อไฟล์
-    $sql = "INSERT INTO province (pname, rid) VALUES ('$pname', '$rid')";
+    // บันทึกข้อมูลโดยใช้ชื่อคอลัมน์จาก provinces.sql
+    $sql = "INSERT INTO provinces (p_name, p_ext, r_id) VALUES ('$pname', '$ext', '$rid')";
+    
     if (mysqli_query($conn, $sql)) {
         $last_id = mysqli_insert_id($conn);
         
-        // จัดการไฟล์รูปภาพตามโครงสร้าง img/ID.ext
-        $ext = pathinfo($_FILES['pimage']['name'], PATHINFO_EXTENSION);
+        // บันทึกไฟล์ลงโฟลเดอร์ img/ โดยใช้ ID.นามสกุล
         $filename = $last_id . "." . $ext;
         move_uploaded_file($_FILES['pimage']['tmp_name'], "img/" . $filename);
     }
     header("Location: b.php");
 }
 ?>
-
 
 <!DOCTYPE html>
 <html>
@@ -59,16 +59,19 @@ if (isset($_POST['Submit'])) {
         </thead>
         <tbody>
             <?php
-            $result = mysqli_query($conn, "SELECT * FROM province");
+            // ดึงข้อมูลจากตาราง provinces ตามไฟล์ SQL
+            $result = mysqli_query($conn, "SELECT * FROM provinces");
             while ($row = mysqli_fetch_array($result)) {
-                // สมมติว่าไฟล์ถูกเก็บเป็น ID และนามสกุลไฟล์ในเครื่อง
-                // อ้างอิงจากภาพที่ใช้ชื่อไฟล์เป็น 24.jpg, 29.png
                 echo "<tr>";
-                echo "<td>" . $row['pid'] . "</td>";
-                echo "<td>" . $row['pname'] . "</td>";
-                echo "<td><img src='img/" . $row['pid'] . ".jpg' width='150'></td>"; 
+                echo "<td>" . $row['p_id'] . "</td>"; // ใช้ p_id
+                echo "<td>" . $row['p_name'] . "</td>"; // ใช้ p_name
+                
+                // แสดงรูปตาม ID และนามสกุลที่เก็บใน DB (เช่น 24.jpg หรือ 29.png)
+                $full_img_name = $row['p_id'] . "." . $row['p_ext'];
+                echo "<td><img src='img/" . $full_img_name . "' width='150'></td>";
+                
                 echo "<td align='center'>
-                        <a href='delete_province.php?id=" . $row['pid'] . "' onclick=\"return confirm('คุณต้องการลบข้อมูลนี้หรือไม่')\">
+                        <a href='delete_province.php?id=" . $row['p_id'] . "' onclick=\"return confirm('คุณต้องการลบข้อมูลนี้หรือไม่')\">
                             <img src='img/delete.jpg' width='25'>
                         </a>
                       </td>";
