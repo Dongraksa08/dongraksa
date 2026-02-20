@@ -21,6 +21,7 @@ if (isset($_GET['id'])) {
     }
 }
 
+
 // เมื่อเสร็จแล้วให้เด้งกลับหน้าหลัก
 header("Location: b..php");
 exit;
