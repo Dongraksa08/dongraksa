@@ -19,6 +19,7 @@ if (isset($_GET['id'])) {
     }
 }
 
+
 header("Location: b..php");
 exit;
 ?>
