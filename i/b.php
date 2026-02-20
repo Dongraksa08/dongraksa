@@ -7,12 +7,11 @@ if (isset($_POST['Submit'])) {
     $rid = $_POST['rid'];
     $ext = pathinfo($_FILES['pimage']['name'], PATHINFO_EXTENSION); 
     
-    // บันทึกข้อมูลลงตาราง provinces ตามโครงสร้าง p_id, p_name, p_ext, r_id
+    // บันทึกข้อมูลลงตาราง provinces
     $sql = "INSERT INTO provinces (p_name, p_ext, r_id) VALUES ('$pname', '$ext', '$rid')";
     
     if (mysqli_query($conn, $sql)) {
         $last_id = mysqli_insert_id($conn);
-        // บันทึกไฟล์ลง img/ โดยใช้ ID.นามสกุล
         $filename = $last_id . "." . $ext;
         move_uploaded_file($_FILES['pimage']['tmp_name'], "img/" . $filename);
     }
@@ -43,12 +42,13 @@ if (isset($_POST['Submit'])) {
         ภาค: 
         <select name="rid" required>
             <option value="">-- เลือกภาค --</option>
-            <option value="17">ภาคตะวันออก</option>
-            <option value="27">ภาคตะวันออกเฉียงเหนือ</option>
-            <option value="28">ภาคกลาง</option>
-            <option value="30">ภาคใต้</option>
-            <option value="32">ภาคตะวันตก</option>
-            <option value="35">ภาคเหนือ</option>
+            <?php
+            // ดึงรายชื่อภาคมาแสดงใน Dropdown (สมมติชื่อตาราง regions)
+            $res_reg = mysqli_query($conn, "SELECT * FROM regions");
+            while($row_reg = mysqli_fetch_array($res_reg)) {
+                echo "<option value='".$row_reg['r_id']."'>".$row_reg['r_name']."</option>";
+            }
+            ?>
         </select>
         <button type="submit" name="Submit">บันทึก</button>
     </form>
@@ -58,23 +58,28 @@ if (isset($_POST['Submit'])) {
             <tr>
                 <th>Province ID</th>
                 <th>Province Name</th>
-                <th>Province Picture</th>
+                <th>Region Name</th> <th>Province Picture</th>
                 <th>Delete</th>
             </tr>
         </thead>
         <tbody>
             <?php
-            // เรียงลำดับจากเก่าไปใหม่ (ID น้อยไปมาก) เพื่อให้ข้อมูลล่าสุดอยู่ล่างสุด
-            $result = mysqli_query($conn, "SELECT * FROM provinces ORDER BY p_id ASC");
+            // ใช้ INNER JOIN เพื่อดึงชื่อภาค (r_name) มาแสดงคู่กับข้อมูลจังหวัด
+            // เรียงลำดับ p_id จากน้อยไปมาก เพื่อให้ข้อมูลใหม่ล่าสุดอยู่ล่างสุด
+            $sql_view = "SELECT provinces.*, regions.r_name 
+                         FROM provinces 
+                         INNER JOIN regions ON provinces.r_id = regions.r_id 
+                         ORDER BY provinces.p_id ASC";
+            
+            $result = mysqli_query($conn, $sql_view);
             while ($row = mysqli_fetch_array($result)) {
-                // กำหนดชื่อไฟล์รูปภาพจังหวัด
                 $full_img_name = $row['p_id'] . "." . $row['p_ext'];
             ?>
             <tr>
                 <td><?php echo $row['p_id']; ?></td>
                 <td><?php echo $row['p_name']; ?></td>
-                <td>
-                    <img src="img/<?php echo $full_img_name; ?>" width="150" alt="no-image">
+                <td><?php echo $row['r_name']; ?></td> <td>
+                    <img src="img/<?php echo $full_img_name; ?>" width="100">
                 </td>
                 <td>
                     <a href="delete_provinces.php?id=<?php echo $row['p_id']; ?>" 
