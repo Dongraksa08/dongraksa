@@ -1,31 +1,40 @@
 <?php
 include_once("connectdb.php");
 
-// ส่วนการบันทึกข้อมูล
+// --- ส่วนการบันทึกข้อมูล ---
 if (isset($_POST['Submit'])) {
     $pname = $_POST['pname'];
     $rid = $_POST['rid'];
     $ext = pathinfo($_FILES['pimage']['name'], PATHINFO_EXTENSION); // ดึงนามสกุลไฟล์
     
-    // บันทึกข้อมูลโดยใช้ชื่อคอลัมน์จาก provinces.sql
+    // บันทึกข้อมูลลงตาราง provinces
     $sql = "INSERT INTO provinces (p_name, p_ext, r_id) VALUES ('$pname', '$ext', '$rid')";
     
     if (mysqli_query($conn, $sql)) {
         $last_id = mysqli_insert_id($conn);
-        
-        // บันทึกไฟล์ลงโฟลเดอร์ img/ โดยใช้ ID.นามสกุล
+        // บันทึกไฟล์ลง img/ โดยใช้ ID.นามสกุล (เช่น 1.jpg)
         $filename = $last_id . "." . $ext;
         move_uploaded_file($_FILES['pimage']['tmp_name'], "img/" . $filename);
     }
+    // บันทึกเสร็จแล้วรีเฟรชกลับมาหน้าเดิม
     header("Location: b.php");
+    exit;
 }
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
     <meta charset="utf-8">
     <title>งาน i -- ดวงรักษา อรเพ็ชร (แป้ง)</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        table { border-collapse: collapse; width: 80%; margin-top: 20px; }
+        th { background-color: #f2f2f2; padding: 10px; border: 1px solid #ccc; }
+        td { padding: 10px; border: 1px solid #ccc; text-align: center; }
+        .del-btn img { cursor: pointer; transition: 0.2s; }
+        .del-btn img:hover { transform: scale(1.2); }
+    </style>
 </head>
 <body>
     <h1>จัดการข้อมูลจังหวัด -- ดวงรักษา อรเพ็ชร (แป้ง)</h1>
@@ -34,7 +43,7 @@ if (isset($_POST['Submit'])) {
         ชื่อจังหวัด: <input type="text" name="pname" autofocus required>
         รูปภาพ: <input type="file" name="pimage" required>
         ภาค: 
-        <select name="rid">
+        <select name="rid" required>
             <option value="">-- เลือกภาค --</option>
             <option value="17">ภาคตะวันออก</option>
             <option value="27">ภาคตะวันออกเฉียงเหนือ</option>
@@ -46,9 +55,7 @@ if (isset($_POST['Submit'])) {
         <button type="submit" name="Submit">บันทึก</button>
     </form>
 
-    <br><br>
-
-    <table border="1">
+    <table>
         <thead>
             <tr>
                 <th>Province ID</th>
@@ -59,25 +66,24 @@ if (isset($_POST['Submit'])) {
         </thead>
         <tbody>
             <?php
-            // ดึงข้อมูลจากตาราง provinces ตามไฟล์ SQL
-            $result = mysqli_query($conn, "SELECT * FROM provinces");
+            // เรียงลำดับจาก ID น้อยไปมาก (ASC) เพื่อให้ข้อมูลล่าสุดอยู่ล่างสุด
+            $result = mysqli_query($conn, "SELECT * FROM provinces ORDER BY p_id ASC");
             while ($row = mysqli_fetch_array($result)) {
-                echo "<tr>";
-                echo "<td>" . $row['p_id'] . "</td>"; // ใช้ p_id
-                echo "<td>" . $row['p_name'] . "</td>"; // ใช้ p_name
-                
-                // แสดงรูปตาม ID และนามสกุลที่เก็บใน DB (เช่น 24.jpg หรือ 29.png)
-                $full_img_name = $row['p_id'] . "." . $row['p_ext'];
-                echo "<td><img src='img/" . $full_img_name . "' width='150'></td>";
-                
-                echo "<td align='center'>
-                        <a href='delete_provinces.php?id=" . $row['p_id'] . "' onclick=\"return confirm('คุณต้องการลบข้อมูลนี้หรือไม่')\">
-                            <img src='img/delete.jpg' width='25'>
-                        </a>
-                      </td>";
-                echo "</tr>";
-            }
+                $full_img_name = $row['p_id'] . "." . $row['p_ext']; //
             ?>
+            <tr>
+                <td><?php echo $row['p_id']; ?></td>
+                <td><?php echo $row['p_name']; ?></td>
+                <td><img src="img/<?php echo $full_img_name; ?>" width="150"></td>
+                <td>
+                    <a href="delete_provinces.php?id=<?php echo $row['p_id']; ?>" 
+                       class="del-btn"
+                       onclick="return confirm('คุณต้องการลบข้อมูลนี้หรือไม่')">
+                        <img src="img/delete.jpg" width="25" height="25" alt="ลบ">
+                    </a>
+                </td>
+            </tr>
+            <?php } ?>
         </tbody>
     </table>
 </body>
