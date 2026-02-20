@@ -71,7 +71,7 @@ if (isset($_POST['Submit'])) {
                 echo "<td><img src='img/" . $full_img_name . "' width='150'></td>";
                 
                 echo "<td align='center'>
-                        <a href='delete_province.php?id=" . $row['p_id'] . "' onclick=\"return confirm('คุณต้องการลบข้อมูลนี้หรือไม่')\">
+                        <a href='delete_provinces.php?id=" . $row['p_id'] . "' onclick=\"return confirm('คุณต้องการลบข้อมูลนี้หรือไม่')\">
                             <img src='img/delete.jpg' width='25'>
                         </a>
                       </td>";
