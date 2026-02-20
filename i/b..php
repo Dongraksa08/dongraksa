@@ -86,10 +86,10 @@ if (isset($_POST['Submit'])) {
                     <?php } else { echo "ไม่มีรูปภาพ"; } ?>
                 </td>
                 <td>
-                    <a href="delete_province.php?id=<?php echo $row['p_id']; ?>" 
+                    <a href="delete_provinces.php?id=<?php echo $row['p_id']; ?>" 
                        class="del-btn"
                        onclick="return confirm('คุณต้องการลบข้อมูลจังหวัด <?php echo $row['p_name']; ?> ใช่หรือไม่?')">
-                        <img src="img/delete.jpg" width="30" height="30" alt="ลบ">
+                        <img src="img/delete.jpg" width="30" height="30" >
                     </a>
                 </td>
             </tr>
