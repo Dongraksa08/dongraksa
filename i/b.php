@@ -56,10 +56,10 @@ if (isset($_POST['Submit'])) {
     <table>
         <thead>
             <tr>
-                <th>Province ID</th>
-                <th>Province Name</th>
-                <th>Region Name</th> <th>Province Picture</th>
-                <th>Delete</th>
+                <th>รหัสจังหวัด</th>
+                <th>ชื่อจังหวัด</th>
+                <th>ชื่อภาค</th> <th>Province Picture</th>
+                <th>ลบ</th>
             </tr>
         </thead>
         <tbody>
@@ -84,7 +84,7 @@ if (isset($_POST['Submit'])) {
                 <td>
                     <a href="delete_provinces.php?id=<?php echo $row['p_id']; ?>" 
                        onclick="return confirm('คุณต้องการลบข้อมูลนี้หรือไม่')">
-                       
+
                         <img src="img/delete.jpg" width="30" height="30" alt="ลบ">
                     </a>
                 </td>
