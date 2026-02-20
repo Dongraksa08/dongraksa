@@ -5,18 +5,17 @@ include_once("connectdb.php");
 if (isset($_POST['Submit'])) {
     $pname = $_POST['pname'];
     $rid = $_POST['rid'];
-    $ext = pathinfo($_FILES['pimage']['name'], PATHINFO_EXTENSION); // ดึงนามสกุลไฟล์
+    $ext = pathinfo($_FILES['pimage']['name'], PATHINFO_EXTENSION); 
     
-    // บันทึกข้อมูลลงตาราง provinces
+    // บันทึกข้อมูลลงตาราง provinces ตามโครงสร้าง p_id, p_name, p_ext, r_id
     $sql = "INSERT INTO provinces (p_name, p_ext, r_id) VALUES ('$pname', '$ext', '$rid')";
     
     if (mysqli_query($conn, $sql)) {
         $last_id = mysqli_insert_id($conn);
-        // บันทึกไฟล์ลง img/ โดยใช้ ID.นามสกุล (เช่น 1.jpg)
+        // บันทึกไฟล์ลง img/ โดยใช้ ID.นามสกุล
         $filename = $last_id . "." . $ext;
         move_uploaded_file($_FILES['pimage']['tmp_name'], "img/" . $filename);
     }
-    // บันทึกเสร็จแล้วรีเฟรชกลับมาหน้าเดิม
     header("Location: b.php");
     exit;
 }
@@ -26,21 +25,20 @@ if (isset($_POST['Submit'])) {
 <html lang="th">
 <head>
     <meta charset="utf-8">
-    <title>งาน i -- ดวงรักษา อรเพ็ชร (แป้ง)</title>
+    <title>จัดการข้อมูลจังหวัด -- ดวงรักษา อรเพ็ชร (แป้ง)</title>
     <style>
         body { font-family: sans-serif; padding: 20px; }
-        table { border-collapse: collapse; width: 80%; margin-top: 20px; }
-        th { background-color: #f2f2f2; padding: 10px; border: 1px solid #ccc; }
-        td { padding: 10px; border: 1px solid #ccc; text-align: center; }
-        .del-btn img { cursor: pointer; transition: 0.2s; }
-        .del-btn img:hover { transform: scale(1.2); }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #333; padding: 10px; text-align: center; }
+        th { background-color: #f2f2f2; }
+        .del-btn img { cursor: pointer; border: none; }
     </style>
 </head>
 <body>
     <h1>จัดการข้อมูลจังหวัด -- ดวงรักษา อรเพ็ชร (แป้ง)</h1>
     
     <form method="post" enctype="multipart/form-data">
-        ชื่อจังหวัด: <input type="text" name="pname" autofocus required>
+        ชื่อจังหวัด: <input type="text" name="pname" required>
         รูปภาพ: <input type="file" name="pimage" required>
         ภาค: 
         <select name="rid" required>
@@ -66,20 +64,22 @@ if (isset($_POST['Submit'])) {
         </thead>
         <tbody>
             <?php
-            // เรียงลำดับจาก ID น้อยไปมาก (ASC) เพื่อให้ข้อมูลล่าสุดอยู่ล่างสุด
+            // เรียงลำดับจากเก่าไปใหม่ (ID น้อยไปมาก) เพื่อให้ข้อมูลล่าสุดอยู่ล่างสุด
             $result = mysqli_query($conn, "SELECT * FROM provinces ORDER BY p_id ASC");
             while ($row = mysqli_fetch_array($result)) {
-                $full_img_name = $row['p_id'] . "." . $row['p_ext']; //
+                // กำหนดชื่อไฟล์รูปภาพจังหวัด
+                $full_img_name = $row['p_id'] . "." . $row['p_ext'];
             ?>
             <tr>
                 <td><?php echo $row['p_id']; ?></td>
                 <td><?php echo $row['p_name']; ?></td>
-                <td><img src="img/<?php echo $full_img_name; ?>" width="150"></td>
+                <td>
+                    <img src="img/<?php echo $full_img_name; ?>" width="150" alt="no-image">
+                </td>
                 <td>
                     <a href="delete_provinces.php?id=<?php echo $row['p_id']; ?>" 
-                       class="del-btn"
                        onclick="return confirm('คุณต้องการลบข้อมูลนี้หรือไม่')">
-                        <img src="img/delete.jpg" width="25" height="25" alt="ลบ">
+                        <img src="img/delete.jpg" width="30" height="30" alt="ลบ">
                     </a>
                 </td>
             </tr>
