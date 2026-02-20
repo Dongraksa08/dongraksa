@@ -3,26 +3,20 @@ include_once("connectdb.php");
 
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
-
-    // 1. ดึงข้อมูลเพื่อหานามสกุลไฟล์ภาพก่อนลบ
-    $sql_file = "SELECT p_id, p_ext FROM provinces WHERE p_id = '$id'";
-    $result_file = mysqli_query($conn, $sql_file);
-    $row = mysqli_fetch_array($result_file);
     
-    if ($row) {
-        $full_path = "img/" . $row['p_id'] . "." . $row['p_ext'];
-        
-        // 2. ลบไฟล์ภาพในโฟลเดอร์ img/
-        if (file_exists($full_path)) {
-            unlink($full_path);
+    // ค้นหานามสกุลไฟล์เพื่อลบรูปภาพ
+    $res = mysqli_query($conn, "SELECT p_ext FROM provinces WHERE p_id='$id'");
+    $data = mysqli_fetch_array($res);
+    
+    if ($data) {
+        $file_to_delete = "img/" . $id . "." . $data['p_ext'];
+        if (file_exists($file_to_delete)) {
+            unlink($file_to_delete); // ลบไฟล์จริงออกจากเครื่อง
         }
-
-        // 3. ลบข้อมูลในฐานข้อมูล
-        $sql_delete = "DELETE FROM provinces WHERE p_id = '$id'";
-        mysqli_query($conn, $sql_delete);
+        // ลบข้อมูลในฐานข้อมูล
+        mysqli_query($conn, "DELETE FROM provinces WHERE p_id='$id'");
     }
 }
-
-// ลบเสร็จแล้วเด้งกลับหน้าหลัก
-echo "<script>window.location='b..php';</script>";
+// กลับไปที่หน้าหลัก
+header("Location: b.php");
 ?>
