@@ -7,20 +7,19 @@ if (isset($_POST['Submit'])) {
     $rid = $_POST['rid'];
     $ext = pathinfo($_FILES['pimage']['name'], PATHINFO_EXTENSION); // ดึงนามสกุลไฟล์
     
-    // บันทึกข้อมูลโดยใช้ชื่อคอลัมน์จาก provinces.sql
+    // บันทึกข้อมูลลงตาราง provinces
     $sql = "INSERT INTO provinces (p_name, p_ext, r_id) VALUES ('$pname', '$ext', '$rid')";
-    
     if (mysqli_query($conn, $sql)) {
         $last_id = mysqli_insert_id($conn);
-        
-        // บันทึกไฟล์ลงโฟลเดอร์ img/ โดยใช้ ID.นามสกุล
+        // เก็บไฟล์ในรูปแบบ ID.นามสกุล (เช่น 1.jpg)
         $filename = $last_id . "." . $ext;
         move_uploaded_file($_FILES['pimage']['tmp_name'], "img/" . $filename);
     }
+    // สั่งให้กลับมาหน้าเดิมหลังบันทึกเสร็จ
     header("Location: b.php");
+    exit;
 }
 ?>
-
 
 <!DOCTYPE html>
 <html>
@@ -37,12 +36,10 @@ if (isset($_POST['Submit'])) {
         ภาค: 
         <select name="rid">
             <option value="">-- เลือกภาค --</option>
-            <option value="17">ภาคตะวันออก</option>
-            <option value="27">ภาคตะวันออกเฉียงเหนือ</option>
-            <option value="28">ภาคกลาง</option>
-            <option value="30">ภาคใต้</option>
-            <option value="32">ภาคตะวันตก</option>
-            <option value="35">ภาคเหนือ</option>
+            <option value="1">ภาคเหนือ</option>
+            <option value="2">ภาคตะวันออกเฉียงเหนือ</option>
+            <option value="3">ภาคกลาง</option>
+            <option value="4">ภาคใต้</option>
         </select>
         <button type="submit" name="Submit">บันทึก</button>
     </form>
@@ -60,20 +57,18 @@ if (isset($_POST['Submit'])) {
         </thead>
         <tbody>
             <?php
-            // ดึงข้อมูลจากตาราง provinces ตามไฟล์ SQL
+            // ดึงข้อมูลจากตาราง provinces
             $result = mysqli_query($conn, "SELECT * FROM provinces");
             while ($row = mysqli_fetch_array($result)) {
+                $img_file = "img/" . $row['p_id'] . "." . $row['p_ext'];
                 echo "<tr>";
-                echo "<td>" . $row['p_id'] . "</td>"; // ใช้ p_id
-                echo "<td>" . $row['p_name'] . "</td>"; // ใช้ p_name
-                
-                // แสดงรูปตาม ID และนามสกุลที่เก็บใน DB (เช่น 24.jpg หรือ 29.png)
-                $full_img_name = $row['p_id'] . "." . $row['p_ext'];
-                echo "<td><img src='img/" . $full_img_name . "' width='150'></td>";
-                
+                echo "<td>" . $row['p_id'] . "</td>";
+                echo "<td>" . $row['p_name'] . "</td>";
+                echo "<td><img src='$img_file' width='150'></td>";
+                // แสดงรูปถังขยะในทุกแถว
                 echo "<td align='center'>
                         <a href='delete_province.php?id=" . $row['p_id'] . "' onclick=\"return confirm('คุณต้องการลบข้อมูลนี้หรือไม่')\">
-                            <img src='img/delete.jpg' width='25'>
+                            <img src='img/delete.jpg' width='25' height='25' alt='ลบ'>
                         </a>
                       </td>";
                 echo "</tr>";
