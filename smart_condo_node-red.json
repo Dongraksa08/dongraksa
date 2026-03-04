@@ -1,0 +1,39 @@
+[
+    {
+        "id": "0f9fbef3443f9d5f",
+        "type": "serial in",
+        "z": "352c4fe69a424b9f",
+        "name": "",
+        "serial": "s1",
+        "x": 90,
+        "y": 120,
+        "wires": [
+            [
+                "c622fd2093282fdd"
+            ]
+        ]
+    },
+    {
+        "id": "s1",
+        "type": "serial-port",
+        "name": "",
+        "serialport": "COM15",
+        "serialbaud": "115200",
+        "databits": 8,
+        "parity": "none",
+        "stopbits": 1,
+        "waitfor": "",
+        "newline": "\\n",
+        "out": "char",
+        "addchar": "",
+        "responsetimeout": ""
+    },
+    {
+        "id": "fc484cebb8830658",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-node-serialport": "2.0.3"
+        }
+    }
+]
